@@ -45,7 +45,7 @@ ax3.set_title('1st Order Differencing')
 ax3.plot(df.sales.diff())
 
 ax4 = f3.add_subplot(122)
-plot_pacf(df.sales.diff().dropna(), ax = ax4)
+plot_pacf(df.sales.diff().dropna(), ax = ax4, lags=1)
 plt.show()
 
 f4 = plt.figure()
@@ -54,11 +54,10 @@ ax5.set_title('2st Order Differencing')
 ax5.plot(df.sales.diff().diff())
 
 ax6 = f4.add_subplot(122)
-plot_pacf(df.sales.diff().diff().dropna(), ax = ax6)
+plot_pacf(df.sales.diff().diff().dropna(), ax = ax6,lags=1)
 plt.show()
 
-from statsmodels.tsa.arima_model import ARIMA
-arima_model = ARIMA(df.sales, order=(5,1,4)).fit()
+from statsmodels.tsa.arima.model import ARIMA
+arima_model = ARIMA(df.sales, order=(1,1,1)).fit()
 prediction = arima_model.predict(len(df.sales), len(df.sales + 6))
-df.sales.plot()
-prediction.plot()
+print(arima_model.summary())
