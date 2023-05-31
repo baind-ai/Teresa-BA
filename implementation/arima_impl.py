@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 def load_data():
     #data = np.loadtxt(file_path, delimiter=",")
     values = []
-    df = pd.read_csv('D:/BArbeit/Teresa-BA/examples/trend.csv', usecols=['sales'])
+    df = pd.read_csv('.\example\trend.csv', usecols=['sales'])
     values = df['sales']
     return values
 

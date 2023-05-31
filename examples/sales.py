@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 #df = pd.read_csv('D:/BArbeit/Teresa-BA/examples/trend.csv', parse_dates=['login_date'], index_col=['login_date'])
-df = pd.read_csv('D:/BArbeit/Teresa-BA/examples/trend.csv', sep=";", usecols=["sales"])
+df = pd.read_csv('trend.csv', sep=";", usecols=["sales"])
 print(f"Total samples: {len(df)}")
 print(df.head())
 
