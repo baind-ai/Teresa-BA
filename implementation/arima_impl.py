@@ -6,9 +6,13 @@ import matplotlib.pyplot as plt
 def load_data():
     #data = np.loadtxt(file_path, delimiter=",")
     values = []
-    df = pd.read_csv('.\example\trend.csv', usecols=['sales'])
-    values = df['sales']
+    df = pd.read_csv('./baind.csv', sep=",", names=["sensor", "temp", "time_stamp"])
+    values = df['temp']
     return values
+
+def return_df():
+    df = pd.read_csv('./baind.csv', sep=",", names=["sensor", "temp", "time_stamp"])
+    return df
 
 # Differenzieren der Zeitreihe
 def difference(data, d):
@@ -70,7 +74,7 @@ def ar_model(time_series, p):
 
 # Moving Average (MA)
 def ma_model(residuals, q):
-    coefficients = ar_model(residuals, q)[0]
+    coefficients = ar_model(residuals, q)
     return coefficients
 
 # ARIMA
@@ -79,40 +83,41 @@ def arima_model(time_series, p, d, q):
     integrated_time_series = difference(time_series, d)
     
     # Autoregression
-    ar_coefficients, residuals = ar_model(integrated_time_series, p)
+    ar_coefficients, residuals= ar_model(integrated_time_series, p)
     
     # Moving Average
     ma_coefficients = ma_model(residuals, q)
+
+    residuals2 = integrated_time_series[p:] - integrated_time_series[p:].dot(ar_coefficients)
     
-    return ar_coefficients, ma_coefficients
+    return ar_coefficients, ma_coefficients, residuals2
 
 
-def predict_arima(time_series, p, d, q, n_steps):
+def predict_arima(model, p, d, q, n_steps):
+    time_series = load_data()
     # Fit ARIMA model
-    ar_coefficients, ma_coefficients = arima_model(time_series, p, d, q)
+    ar_coefficients, ma_coefficients, residuals = arima_model(time_series, p, d, q)
+    print(f"res dim: {residuals.ndim}")
+    print(f"ar dim: {ar_coefficients.ndim}")
+    print(f"ma dim: {ma_coefficients.ndim}")
     
     # Make predictions
+    #predictions = [len(return_df())]
     predictions = []
+    print(f"time series dim: {time_series.ndim}")
+    print(f"predictions dim: {len(predictions)}")
     for _ in range(n_steps):
         # Predict next value
         ar_term = np.dot(ar_coefficients, time_series[-p:])
-        ma_term = np.dot(ma_coefficients, predictions[-q:])
+        ma_term = np.dot(ma_coefficients, residuals[-q:])
         prediction = ar_term + ma_term
+        print(prediction, ar_term, ma_term, sep=' : ')
         predictions.append(prediction)
         
         # Update time series
         time_series = np.append(time_series, prediction)
     
     return predictions
-
-# Make predictions
-n_steps = 10
-time_series = load_data()
-predictions = predict_arima(time_series, p, d, q, n_steps)
-
-# Plot predictions
-plt.plot(predictions)
-plt.show()
 
         
    # In dieser Funktion werden die Zeitreihe und die Verzögerungsordnung (p) als Eingabe verwendet. Die Funktion erstellt dann eine Designmatrix X und einen Zielvektor y aus der Zeitreihe. Die Designmatrix X enthält verzögerte Beobachtungen der Zeitreihe und der Zielvektor y enthält die entsprechenden aktuellen Beobachtungen.
